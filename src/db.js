@@ -38,7 +38,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Import Models
-db.test = require("./models/test.model")(sequelize, Sequelize);
 db.bet = require("./models/bet.model")(sequelize, Sequelize);
 db.round = require("./models/round.model")(sequelize, Sequelize);
 db.transaction = require("./models/transaction.model")(sequelize, Sequelize);
@@ -65,7 +64,7 @@ db.transaction.belongsTo(db.user, { foreignKey: "user_id" });
 
 // Sync database
 db.sequelize
-    .sync({ alter: true }) // Use `alter: true` to update tables without deleting data
+    .sync({ alter: false }) // Use `alter: true` to update tables without deleting data
     .then(() => {
         console.log("✅ Database & tables created!");
     })
