@@ -18,7 +18,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       bet_color: {
-        type: DataTypes.ENUM("Red", "Green", "Blue", "Yellow"),
+        type: DataTypes.ENUM("Red", "Green", "Black", "Blue", "Orange", "Pink"),
         allowNull: false,
       },
       bet_amount: {
