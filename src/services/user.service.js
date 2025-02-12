@@ -1,34 +1,39 @@
 const db = require("../db");
 const User = db.user;
 
-const UserService = {
-    // ✅ Create User
+const userService = {
+    // ✅ Create a new user
     async createUser(userData) {
         return await User.create(userData);
     },
 
-    // ✅ Get All Users
+    // ✅ Get all users
     async getAllUsers() {
         return await User.findAll();
     },
 
-    // ✅ Get User By ID
-    async getUserById(userId) {
-        return await User.findByPk(userId);
+    // ✅ Get user by ID
+    async getUserById(id) {
+        return await User.findByPk(id);
     },
 
-    // ✅ Update User
-    async updateUser(userId, userData) {
-        const user = await User.findByPk(userId);
+    // ✅ Get user by email (For Login)
+    async getUserByEmail(email) {
+        return await User.findOne({ where: { email } });
+    },
+
+    // ✅ Update user
+    async updateUser(id, updateData) {
+        const user = await User.findByPk(id);
         if (!user) return null;
-        await user.update(userData);
+        await user.update(updateData);
         return user;
     },
 
-    // ✅ Delete User
-    async deleteUser(userId) {
-        return await User.destroy({ where: { id: userId } });
+    // ✅ Delete user
+    async deleteUser(id) {
+        return await User.destroy({ where: { id } });
     },
 };
 
-module.exports = UserService;
+module.exports = userService;
