@@ -26,6 +26,10 @@ module.exports = (sequelize) => {
         type: DataTypes.ENUM("active", "completed"),
         defaultValue: "active",
       },
+      winning_color: {
+        type: DataTypes.ENUM("Red", "Green", "Blue"), // Randomly picked when round is created
+        allowNull: true, // Will be null until the round is completed
+      },
     },
     {
       tableName: "round",
