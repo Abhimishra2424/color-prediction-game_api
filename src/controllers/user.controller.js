@@ -1,9 +1,11 @@
 const userService = require("../services/user.service");
+const walletService = require("../services/wallet.service"); // Import wallet service
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const UserController = {
     // ✅ Register a new user
+
     async register(req, res) {
         try {
             const { username, email, password } = req.body;
@@ -15,6 +17,9 @@ const UserController = {
 
             const hashedPassword = await bcrypt.hash(password, 10);
             const newUser = await userService.createUser({ username, email, password: hashedPassword });
+
+            // ✅ Automatically create a wallet for the user
+            await walletService.createWallet(newUser.id);
 
             return res.status(201).json({ success: true, message: "User registered successfully", data: newUser });
         } catch (error) {

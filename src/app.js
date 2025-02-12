@@ -22,9 +22,11 @@ app.get("/favicon.ico", (req, res) => res.status(204).end());
 // Routes
 const userRoutes = require("./routes/user.routes");
 const roundRoutes = require("./routes/round.routes");
+const walletRoutes = require("./routes/wallet.routes");
 
-app.use("/api/users", userRoutes);
-app.use("/api/rounds", roundRoutes); // ✅ Round APIs added
+app.use("/api/users", userRoutes); // ✅ Users APIs added
+app.use("/api/rounds", roundRoutes); // ✅ Rounds APIs added
+app.use("/api/wallet", walletRoutes); // ✅ Wallet APIs added
 
 // ✅ Auto-check and create rounds every second
 setInterval(async () => {
