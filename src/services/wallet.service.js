@@ -19,7 +19,7 @@ const WalletService = {
     },
 
     // ✅ Create an add-money request
-    async addMoneyRequest(user_id, amount, transaction_number) {
+    async addMoneyRequest(user_id, amount, transaction_number, source) {
         if (!user_id || !amount || !transaction_number) {
             throw new Error("User ID, amount, and transaction number are required.");
         }
@@ -41,6 +41,7 @@ const WalletService = {
             transaction_number,
             type: "credit",
             status: "pending",
+            source:  source
         });
     },
 

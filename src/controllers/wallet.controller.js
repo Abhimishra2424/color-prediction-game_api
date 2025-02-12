@@ -24,7 +24,7 @@ const WalletController = {
   // ✅ Create Add Money Request
   async addMoneyRequest(req, res) {
     try {
-      const { amount, transaction_number, user_id } = req.body;
+      const { amount, transaction_number, user_id, source } = req.body;
 
       // 🔹 Validate required fields
       if (!user_id || !amount || !transaction_number) {
@@ -52,7 +52,7 @@ const WalletController = {
       }
 
       // 🔹 Create a new add money request
-      const request = await WalletService.addMoneyRequest(user_id, amount, transaction_number);
+      const request = await WalletService.addMoneyRequest(user_id, amount, transaction_number, source);
       
       return res.status(201).json({ 
         success: true, 
