@@ -2,7 +2,7 @@ const db = require("../db");
 const Round = db.round;
 
 const getRandomColor = () => {
-  const colors = ["Red", "Green", "Blue"];
+  const colors = ["Red", "Green", "Black", "Blue", "Orange", "Pink"];
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
