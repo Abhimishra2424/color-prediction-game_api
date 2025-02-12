@@ -43,7 +43,6 @@ db.round = require("./models/round.model")(sequelize, Sequelize);
 db.transaction = require("./models/transaction.model")(sequelize, Sequelize);
 db.user = require("./models/user.model")(sequelize, Sequelize);
 db.wallet = require("./models/wallet.model")(sequelize, Sequelize);
-db.addMoneyRequest = require("./models/add_money_request.model")(sequelize, Sequelize); // AddMoneyRequest Model
 
 // 🛠️ Associations
 
@@ -63,13 +62,9 @@ db.bet.belongsTo(db.round, { foreignKey: "round_id" });
 db.user.hasMany(db.transaction, { foreignKey: "user_id", onDelete: "CASCADE" });
 db.transaction.belongsTo(db.user, { foreignKey: "user_id" });
 
-// 5️⃣ Wallet - Add Money Request (One-to-Many)
-db.wallet.hasMany(db.addMoneyRequest, { foreignKey: "wallet_id", onDelete: "CASCADE" });
-db.addMoneyRequest.belongsTo(db.wallet, { foreignKey: "wallet_id" });
-
 // Sync database
 db.sequelize
-    .sync({ alter: false }) // Use `alter: true` to update tables without deleting data
+    .sync({ alter: true }) // Use `alter: true` to update tables without deleting data
     .then(() => {
         console.log("✅ Database & tables created!");
     })

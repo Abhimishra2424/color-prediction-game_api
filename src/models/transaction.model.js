@@ -21,6 +21,21 @@ module.exports = (sequelize) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
+      status: {
+        type: DataTypes.ENUM("pending", "approved", "rejected"),
+        allowNull: false,
+        defaultValue: "pending",
+      },
+      source: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        comment: "Reason for transaction (Add Money, Withdrawal, etc.)",
+      },
+      transaction_number: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
     },
     {
       tableName: "transaction",

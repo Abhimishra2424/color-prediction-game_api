@@ -1,56 +1,91 @@
 const db = require("../db");
 const Wallet = db.wallet;
-const AddMoneyRequest = db.addMoneyRequest;
+const Transaction = db.transaction;
+const { Op } = require("sequelize");
 
 const WalletService = {
 
+    // ✅ Create a new wallet for the user
     async createWallet(userId) {
         return await Wallet.create({ user_id: userId, balance: 0.0 });
     },
 
+    // ✅ Get wallet details by user_id
     async getWallet(user_id) {
-        return await Wallet.findOne({ where: { user_id } });
+        if (!user_id) throw new Error("User ID is required.");
+        const wallet = await Wallet.findOne({ where: { user_id } });
+        if (!wallet) throw new Error("Wallet not found.");
+        return wallet;
     },
 
-    async createAddMoneyRequest(user_id, amount, transaction_number) {
-        return await AddMoneyRequest.create({
+    // ✅ Create an add-money request
+    async addMoneyRequest(user_id, amount, transaction_number) {
+        if (!user_id || !amount || !transaction_number) {
+            throw new Error("User ID, amount, and transaction number are required.");
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+            throw new Error("Amount must be a valid positive number.");
+        }
+
+        // 🔹 Check if transaction number is already used
+        const existingTransaction = await Transaction.findOne({ where: { transaction_number } });
+        if (existingTransaction) {
+            throw new Error(`Transaction number "${transaction_number}" already exists.`);
+        }
+
+        // 🔹 Create a pending transaction
+        return await Transaction.create({
             user_id,
             amount,
             transaction_number,
+            type: "credit",
             status: "pending",
         });
     },
 
-    async approveAddMoneyRequest(request_id) {
-        const request = await AddMoneyRequest.findByPk(request_id);
-        if (!request || request.status !== "pending") return null;
+    // ✅ Approve a money request and update wallet balance
+    async approveAddMoneyRequest(transaction_id) {
+        if (!transaction_id) throw new Error("Transaction ID is required.");
 
-        const wallet = await Wallet.findOne({ where: { user_id: request.user_id } });
-        if (!wallet) return null;
+        const transaction = await Transaction.findByPk(transaction_id);
+        if (!transaction) throw new Error("Transaction not found.");
+        if (transaction.status !== "pending") throw new Error("Transaction is already processed.");
 
-        wallet.balance = parseFloat(wallet.balance) + parseFloat(request.amount);
-        await wallet.save();
+        const wallet = await Wallet.findOne({ where: { user_id: transaction.user_id } });
+        if (!wallet) throw new Error("Wallet not found.");
 
-        request.status = "approved";
-        await request.save();
+        // Start a database transaction to ensure data consistency
+        return await db.sequelize.transaction(async (t) => {
+            wallet.balance = parseFloat(wallet.balance) + parseFloat(transaction.amount);
+            await wallet.save({ transaction: t });
 
-        return wallet;
+            transaction.status = "approved";
+            await transaction.save({ transaction: t });
+
+            return wallet;
+        });
     },
 
-    async rejectAddMoneyRequest(request_id) {
-        const request = await AddMoneyRequest.findByPk(request_id);
-        if (!request || request.status !== "pending") return null;
+    // ✅ Reject a money request
+    async rejectAddMoneyRequest(transaction_id) {
+        if (!transaction_id) throw new Error("Transaction ID is required.");
 
-        request.status = "rejected";
-        await request.save();
+        const transaction = await Transaction.findByPk(transaction_id);
+        if (!transaction) throw new Error("Transaction not found.");
+        if (transaction.status !== "pending") throw new Error("Transaction is already processed.");
 
-        return request;
+        transaction.status = "rejected";
+        await transaction.save();
+
+        return transaction;
     },
 
-    async getRequestByTransactionNumber(transaction_number){
-        return await AddMoneyRequest.findOne({ where: { transaction_number } });
-    }
-    
+    // ✅ Get request by transaction number
+    async getRequestByTransactionNumber(transaction_number) {
+        if (!transaction_number) throw new Error("Transaction number is required.");
+        return await Transaction.findOne({ where: { transaction_number } });
+    },
 };
 
 module.exports = WalletService;
