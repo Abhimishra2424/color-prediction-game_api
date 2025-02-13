@@ -35,6 +35,19 @@ const RoundController = {
       res.status(500).json({ status: "error", message: error.message });
     }
   },
+
+  async getRound(req, res) {
+    try {
+      const activeRound = await roundService.getCurrentRoundExcludeWinningColor();
+      if (!activeRound) {
+        return res.status(404).json({ message: "No active round found!" });
+      }
+      res.status(200).json(activeRound);
+    } catch (error) {
+      res.status(500).json({ status: "error", message: error.message });
+    }
+  }
+
 };
 
 module.exports = RoundController;

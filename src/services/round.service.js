@@ -49,6 +49,15 @@ const RoundService = {
       order: [["id", "DESC"]],
     });
   },
+
+  async getCurrentRoundExcludeWinningColor() {
+    return await Round.findOne({
+      where: { status: "active" },
+      order: [["id", "DESC"]],
+      attributes: { exclude: ["winning_color"] }, // Exclude winning_color from response
+    });
+  },
+
 };
 
 module.exports = RoundService;
