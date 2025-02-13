@@ -104,20 +104,33 @@ const BetService = {
                     await wallet.save({ transaction: t });
                 }
 
-                // 🔹 Generate a unique transaction number
-                const transactionNumber = uuidv4();
+                const existingWinTransaction = await Transaction.findOne({
+                    where: {
+                        user_id,
+                        type: "credit",
+                        source: `Winning bet on ${bet.bet_color}`
+                    },
+                    transaction: t
+                });
 
-                // 🔹 Create a credit transaction
-                await Transaction.create({
-                    user_id,
-                    amount: winnings,
-                    type: "credit",
-                    status: "completed",
-                    source: `Winning bet on ${bet.bet_color}`,
-                    transaction_number: transactionNumber
-                }, { transaction: t });
+                if (!existingWinTransaction) {
+                    // Generate a unique transaction number
+                    const transactionNumber = uuidv4();
+                    // Create a credit transaction
+                    await Transaction.create({
+                        user_id,
+                        amount: winnings,
+                        type: "credit",
+                        status: "completed",
+                        source: `Winning bet on ${bet.bet_color}`,
+                        transaction_number: transactionNumber
+                    }, { transaction: t });
+
+                    // Ensure wallet balance is updated only once
+                    wallet.balance = Number(wallet.balance) + Number(winnings);
+                    await wallet.save({ transaction: t });
+                }
             }
-
             return {
                 success: true,
                 round_id,
