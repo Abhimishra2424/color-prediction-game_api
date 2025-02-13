@@ -23,9 +23,9 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING(225),
         allowNull: false,
       },
-      balance: {
-        type: DataTypes.DECIMAL(10, 2),
-        defaultValue: 0.0,
+      role: {
+        type: DataTypes.ENUM("admin", "user"),
+        allowNull: false,
       },
     },
     {
