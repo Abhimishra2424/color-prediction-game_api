@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const RoundController = require("../controllers/round.controller");
+const { authMiddleware } = require("../middleware/authMiddleware");
 
-router.post("/create", RoundController.createRound); // ✅ Admin starts the first round manually
-router.get("/current", RoundController.getCurrentRound); // ✅ Users see the current active round
-router.get("/completed", RoundController.getCompletedRounds); // ✅ Admin sees completed rounds
+router.post("/create", authMiddleware, RoundController.createRound); // ✅ Admin starts round
+router.get("/current", authMiddleware, RoundController.getCurrentRound); // ✅ Users see current round
+router.get("/completed", authMiddleware, RoundController.getCompletedRounds); // ✅ Admin sees completed rounds
 
 module.exports = router;

@@ -1,3 +1,4 @@
+const { trim } = require("lodash");
 const db = require("../db");
 const Bet = db.bet;
 const Wallet = db.wallet;
@@ -13,7 +14,7 @@ const BetService = {
             throw new Error("User ID, round ID, color, and amount are required.");
         }
 
-        if (isNaN(bet_amount) || bet_amount <= 0) {
+        if (isNaN(bet_amount) || parseFloat(bet_amount) <= 0) {
             throw new Error("Bet amount must be a valid positive number.");
         }
 
@@ -32,12 +33,13 @@ const BetService = {
 
             // 🔹 Check wallet balance
             const wallet = await Wallet.findOne({ where: { user_id }, transaction: t });
-            if (!wallet || wallet.balance < bet_amount) {
+
+            if (!wallet || parseFloat(wallet.balance) < parseFloat(bet_amount)) {
                 throw new Error("Insufficient balance.");
-            }
+            }            
 
             // 🔹 Deduct bet amount from wallet
-            wallet.balance -= bet_amount;
+            wallet.balance = parseFloat(wallet.balance) - parseFloat(bet_amount);
             await wallet.save({ transaction: t });
 
             // 🔹 Create a bet entry
@@ -89,14 +91,15 @@ const BetService = {
             }
 
             // 🔹 Check if the bet color matches the winning color
-            const isWinner = bet.bet_color === latestRound.winning_color;
+            const isWinner = trim(bet.bet_color).toLowerCase() === trim(latestRound.winning_color).toLowerCase();
             let winnings = 0;
 
             if (isWinner) {
-                winnings = bet.bet_amount * 2; // Example: 2x winnings
+                winnings = parseFloat(bet.bet_amount) * 2; // Example: 2x winnings
 
                 // 🔹 Ensure wallet exists before updating balance
                 let wallet = await Wallet.findOne({ where: { user_id }, transaction: t });
+                
                 if (!wallet) {
                     wallet = await Wallet.create({ user_id, balance: winnings }, { transaction: t }); // Create wallet if missing
                 } else {
@@ -127,7 +130,7 @@ const BetService = {
                     }, { transaction: t });
 
                     // Ensure wallet balance is updated only once
-                    wallet.balance = Number(wallet.balance) + Number(winnings);
+                    wallet.balance = parseFloat(wallet.balance) + parseFloat(winnings);
                     await wallet.save({ transaction: t });
                 }
             }
