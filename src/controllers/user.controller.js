@@ -44,9 +44,9 @@ const UserController = {
     
             // Include role in the token payload
             const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role }, 
+                { id: user.id, email: user.email, role: user.role, username : user.username }, 
                 process.env.JWT_SECRET, 
-                { expiresIn: "1h" }
+                { expiresIn: process.env.JWT_LIFETIME }
             );
     
             return res.status(200).json({ success: true, message: "Login successful", token });

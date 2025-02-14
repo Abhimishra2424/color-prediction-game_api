@@ -1,5 +1,6 @@
 const db = require("../db");
 const User = db.user;
+const Wallet = db.wallet;
 
 const userService = {
     // ✅ Create a new user
@@ -14,7 +15,12 @@ const userService = {
 
     // ✅ Get user by ID
     async getUserById(id) {
-        return await User.findByPk(id);
+        return await User.findByPk(id, {
+            include: {
+                model: Wallet, // Assuming Wallet is imported from your models
+                as: "wallet", // Ensure this matches any alias you used in associations
+            },
+        });
     },
 
     // ✅ Get user by email (For Login)
