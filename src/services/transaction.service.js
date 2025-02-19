@@ -1,4 +1,5 @@
-const { Transaction } = require("../models");
+const db = require("../db");
+const Transaction = db.transaction;
 
 const TransactionService = {
   // ✅ Create a Transaction

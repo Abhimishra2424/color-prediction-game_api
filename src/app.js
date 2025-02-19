@@ -24,11 +24,13 @@ const userRoutes = require("./routes/user.routes");
 const roundRoutes = require("./routes/round.routes");
 const walletRoutes = require("./routes/wallet.routes");
 const betRoutes = require("./routes/bet.routes");
+const transactionRoutes = require("./routes/transaction.routes");
 
 app.use("/api/users", userRoutes); // ✅ Users APIs added
 app.use("/api/rounds", roundRoutes); // ✅ Rounds APIs added
 app.use("/api/wallet", walletRoutes); // ✅ Wallet APIs added
 app.use("/api/bet", betRoutes); // ✅ Bet APIs added
+app.use("/api/transactions", transactionRoutes); // ✅ Transactions APIs added
 
 // ✅ Auto-check and create rounds every second
 setInterval(async () => {

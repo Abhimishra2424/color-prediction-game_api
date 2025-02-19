@@ -1,13 +1,13 @@
 const express = require("express");
 const TransactionController = require("../controllers/transaction.controller");
-const { authenticateUser, adminMiddleware } = require("../middleware/authMiddleware");
+const { adminMiddleware, authMiddleware } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // ✅ User Routes
-router.post("/add", authenticateUser, TransactionController.createTransaction);
-router.get("/", authenticateUser, TransactionController.getUserTransactions);
-router.get("/:id", authenticateUser, TransactionController.getTransactionById);
+router.post("/add", authMiddleware, TransactionController.createTransaction);
+router.post("/get", authMiddleware, TransactionController.getUserTransactions);
+router.get("/:id", authMiddleware, TransactionController.getTransactionById);
 
 // ✅ Admin Routes
 router.get("/admin/all", adminMiddleware, TransactionController.getAllTransactions);
