@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const WalletController = require("../controllers/wallet.controller");
-const { authMiddleware } = require("../middleware/authMiddleware");
+const { authMiddleware , adminMiddleware} = require("../middleware/authMiddleware");
 
+// ✅ User Routes
 router.post("/", authMiddleware, WalletController.getWallet);
 router.post("/add-money", authMiddleware, WalletController.addMoneyRequest);
-router.post("/approve-money", authMiddleware, WalletController.approveRequest);
-router.post("/reject-money", authMiddleware, WalletController.rejectRequest);
+
+// ✅ Admin Routes
+router.post("/admin/approve-money", adminMiddleware, WalletController.approveRequest);
+router.post("/admin/reject-money", adminMiddleware, WalletController.rejectRequest);
 
 module.exports = router;
