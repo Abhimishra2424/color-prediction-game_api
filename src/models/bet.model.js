@@ -25,6 +25,10 @@ module.exports = (sequelize) => {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
+      bet_type: {
+        type: DataTypes.ENUM("win", "loss", "pending"),
+        allowNull: false,
+      },
     },
     {
       tableName: "bet",

@@ -42,23 +42,29 @@ const BetService = {
             // 🔹 Deduct bet amount from wallet
             wallet.balance = parseFloat(wallet.balance) - parseFloat(bet_amount);
             await wallet.save({ transaction: t });
-
-            // 🔹 Create a bet entry
-            const bet = await Bet.create({ user_id, round_id, bet_color, bet_amount }, { transaction: t });
-
+    
+            // 🔹 Create a bet entry with bet_type: "pending"
+            const bet = await Bet.create(
+                { user_id, round_id, bet_color, bet_amount, bet_type: "pending" }, // ✅ Added bet_type: "pending"
+                { transaction: t }
+            );
+    
             // 🔹 Generate a unique transaction number
             const transactionNumber = uuidv4();
 
             // 🔹 Create a debit transaction
-            await Transaction.create({
-                user_id,
-                amount: -bet_amount,
-                type: "debit",
-                status: "completed",
-                source: `Bet placed on ${bet_color}`,
-                transaction_number: transactionNumber,
-            }, { transaction: t });
-
+            await Transaction.create(
+                {
+                    user_id,
+                    amount: -bet_amount,
+                    type: "debit",
+                    status: "completed",
+                    source: `Bet placed on ${bet_color}`,
+                    transaction_number: transactionNumber,
+                },
+                { transaction: t }
+            );
+    
             return { success: true, message: "Bet placed successfully.", bet_id: bet.id };
         });
     },
@@ -92,7 +98,7 @@ const BetService = {
             }
 
             // 🔹 Check if the bet color matches the winning color
-            const isWinner = trim(bet.bet_color).toLowerCase() === trim(latestRound.winning_color).toLowerCase();
+            const isWinner = bet.bet_color.trim().toLowerCase() === latestRound.winning_color.trim().toLowerCase();
             let winnings = 0;
 
             if (isWinner) {
@@ -134,6 +140,14 @@ const BetService = {
                     wallet.balance = parseFloat(wallet.balance) + parseFloat(winnings);
                     await wallet.save({ transaction: t });
                 }
+    
+                // 🔹 Update bet_type to "win"
+                bet.bet_type = "win";
+                await bet.save({ transaction: t });
+            } else {
+                // 🔹 Update bet_type to "loss"
+                bet.bet_type = "loss";
+                await bet.save({ transaction: t });
             }
             return {
                 success: true,
