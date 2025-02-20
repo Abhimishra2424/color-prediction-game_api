@@ -10,7 +10,7 @@ router.post("/get", authMiddleware, TransactionController.getUserTransactions);
 router.get("/:id", authMiddleware, TransactionController.getTransactionById);
 
 // ✅ Admin Routes
-router.get("/admin/all", adminMiddleware, TransactionController.getAllTransactions);
+router.get("/admin/all", authMiddleware, adminMiddleware, TransactionController.getAllTransactions);
 router.put("/admin/approve/:id", adminMiddleware, TransactionController.approveTransaction);
 router.put("/admin/reject/:id", adminMiddleware, TransactionController.rejectTransaction);
 

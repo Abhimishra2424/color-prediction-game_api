@@ -1,5 +1,6 @@
 const db = require("../db");
 const Transaction = db.transaction;
+const User = db.user;
 
 const TransactionService = {
   // ✅ Create a Transaction
@@ -19,7 +20,11 @@ const TransactionService = {
 
   // ✅ Admin - Get All Transactions
   async getAllTransactions() {
-    return await Transaction.findAll();
+    return await Transaction.findAll({
+      include: {
+          model: User, 
+      },
+  });
   },
 
   // ✅ Admin - Update Transaction Status

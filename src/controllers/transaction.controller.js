@@ -15,7 +15,7 @@ const TransactionController = {
   // ✅ Get User Transactions
   async getUserTransactions(req, res) {
     try {
-      const { user_id } = req.body;
+      const { id: user_id } = req.user;
       const transactions = await TransactionService.getUserTransactions(user_id);
       res.status(200).json({ success: true, transactions });
     } catch (error) {
