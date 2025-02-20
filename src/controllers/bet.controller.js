@@ -13,18 +13,19 @@ const BetController = {
 
     async checkResult(req, res) {
         try {
-            const { round_id, user_id, bet_id } = req.body;
-    
-            if (!round_id || !user_id || !bet_id) {
-                return res.status(400).json({ success: false, message: "Round ID, User ID, and Bet ID are required." });
+            const { round_id, bet_id } = req.body;
+            const { id: user_id } = req.user;
+
+            if (!round_id || !bet_id) {
+                return res.status(400).json({ success: false, message: "Round ID, Bet ID are required." });
             }
-    
+
             const result = await BetService.checkResult(round_id, user_id, bet_id);
             return res.status(200).json(result);
         } catch (error) {
             return res.status(400).json({ success: false, message: error.message });
         }
-    },    
+    },
 };
 
 module.exports = BetController;
