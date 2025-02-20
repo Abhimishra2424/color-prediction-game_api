@@ -26,6 +26,16 @@ const BetController = {
             return res.status(400).json({ success: false, message: error.message });
         }
     },
+
+    async getAllBets (req, res) {
+        try {
+            const { id: user_id } = req.user;
+            const result = await BetService.getAllBets(user_id);
+            return res.status(200).json(result);
+        } catch (error) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
+    }
 };
 
 module.exports = BetController;

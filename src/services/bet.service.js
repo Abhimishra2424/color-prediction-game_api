@@ -4,6 +4,7 @@ const Bet = db.bet;
 const Wallet = db.wallet;
 const Transaction = db.transaction;
 const Round = db.round;
+const User = db.user;
 const { v4: uuidv4 } = require("uuid"); // Import UUID library
 
 
@@ -36,7 +37,7 @@ const BetService = {
 
             if (!wallet || parseFloat(wallet.balance) < parseFloat(bet_amount)) {
                 throw new Error("Insufficient balance.");
-            }            
+            }
 
             // 🔹 Deduct bet amount from wallet
             wallet.balance = parseFloat(wallet.balance) - parseFloat(bet_amount);
@@ -99,7 +100,7 @@ const BetService = {
 
                 // 🔹 Ensure wallet exists before updating balance
                 let wallet = await Wallet.findOne({ where: { user_id }, transaction: t });
-                
+
                 if (!wallet) {
                     wallet = await Wallet.create({ user_id, balance: winnings }, { transaction: t }); // Create wallet if missing
                 } else {
@@ -146,7 +147,23 @@ const BetService = {
                 message: isWinner ? `Congratulations! You won ${winnings}.` : "Better luck next time."
             };
         });
+    },
+
+    async getAllBets(user_id) {
+        try {
+            const bets = await Bet.findAll({
+                where: { user_id },
+                order: [["cdate", "DESC"]],
+                include: [
+                    { model: Round, attributes: ["round_no", "winning_color"], where: { status: "completed" } },
+                ],
+            });
+            return { success: true, bets };
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
+
 };
 
 module.exports = BetService;
