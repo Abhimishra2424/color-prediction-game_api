@@ -19,10 +19,6 @@ const sequelize = new Sequelize(
                 connectTimeout: 60000, // 60 seconds timeout
             },
         },
-        define: {
-            charset: "utf8",
-            collate: "utf8_general_ci",
-        },
         pool: {
             max: 5,
             min: 0,
@@ -42,12 +38,6 @@ const sequelize = new Sequelize(
         console.error("❌ Unable to connect to the database:", error);
     }
 })();
-
-const checkDr = fs.readFileSync(path.join(__dirname))
-console.log(checkDr)
-
-const check = fs.readFileSync(path.join(__dirname, './cert.pem'))
-console.log(check)
 
 const db = {};
 db.Sequelize = Sequelize;
