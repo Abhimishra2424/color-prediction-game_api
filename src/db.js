@@ -16,6 +16,7 @@ const sequelize = new Sequelize(
                 require: true,
                 ca: fs.readFileSync(path.join(__dirname, './cert.pem')),
                 rejectUnauthorized: false,
+                connectTimeout: 60000, // 60 seconds timeout
             },
         },
         define: {
@@ -41,6 +42,9 @@ const sequelize = new Sequelize(
         console.error("❌ Unable to connect to the database:", error);
     }
 })();
+
+const checkDr = fs.readFileSync(path.join(__dirname))
+console.log(checkDr)
 
 const check = fs.readFileSync(path.join(__dirname, './cert.pem'))
 console.log(check)
