@@ -11,6 +11,13 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         dialect: process.env.DIALECT,
+        dialectOptions: {
+            ssl: {
+                require: true,
+                ca : fs.readFileSync(path.join(__dirname, './cert.pem')),
+                rejectUnauthorized: false,
+            },
+        },
         define: {
             charset: "utf8",
             collate: "utf8_general_ci",
@@ -20,7 +27,7 @@ const sequelize = new Sequelize(
             min: 0,
             acquire: 60000,
             idle: 10000
-        },
+          },
         timezone: "+05:30", // Indian Standard Time (IST)
     }
 );
@@ -34,6 +41,9 @@ const sequelize = new Sequelize(
         console.error("❌ Unable to connect to the database:", error);
     }
 })();
+
+const check = fs.readFileSync(path.join(__dirname, './cert.pem'))
+console.log(check)
 
 const db = {};
 db.Sequelize = Sequelize;
