@@ -14,7 +14,7 @@ const sequelize = new Sequelize(
         dialectOptions: {
             ssl: {
                 require: true,
-                ca : fs.readFileSync(path.join(__dirname, './cert.pem')),
+                ca: fs.readFileSync(path.join(__dirname, './cert.pem')),
                 rejectUnauthorized: false,
             },
         },
@@ -25,9 +25,9 @@ const sequelize = new Sequelize(
         pool: {
             max: 5,
             min: 0,
-            acquire: 60000,
-            idle: 10000
-          },
+            acquire: 100000,  // Increase acquire timeout
+            idle: 20000       // Increase idle time
+        },
         timezone: "+05:30", // Indian Standard Time (IST)
     }
 );
