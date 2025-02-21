@@ -3,16 +3,6 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
-
-
-const certPath = path.join(__dirname, process.env.CERT_PEM); // Ensure correct path
-const cert = fs.readFileSync(certPath, 'utf8');
-
-
-console.log("Cert Path:", certPath);
-console.log("File Exists:", fs.existsSync(certPath));
-
-
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USERNAME,
@@ -21,13 +11,6 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         port: process.env.DB_PORT,
         dialect: process.env.DIALECT,
-        dialectOptions: {
-            ssl: {
-                require: true,
-                ca: cert, 
-                rejectUnauthorized: false,
-            },
-        },
         define: {
             charset: "utf8",
             collate: "utf8_general_ci",
@@ -37,7 +20,7 @@ const sequelize = new Sequelize(
             min: 0,
             acquire: 60000,
             idle: 10000
-          },
+        },
         timezone: "+05:30", // Indian Standard Time (IST)
     }
 );
