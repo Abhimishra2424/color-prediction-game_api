@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
         dialectOptions: {
             ssl: {
                 require: true,
-                ca: fs.readFileSync(__dirname + "/cert.pem"),
+                ca: fs.readFileSync(path.join(__dirname, "../cert.pem")) ,
                 rejectUnauthorized: false,
             },
         },
@@ -21,6 +21,12 @@ const sequelize = new Sequelize(
             charset: "utf8",
             collate: "utf8_general_ci",
         },
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 60000,
+            idle: 10000
+          },
         timezone: "+05:30", // Indian Standard Time (IST)
     }
 );
