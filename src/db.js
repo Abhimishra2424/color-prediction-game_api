@@ -72,7 +72,7 @@ db.transaction.belongsTo(db.user, { foreignKey: "user_id" });
 
 // Sync database
 db.sequelize
-    .sync({ alter: true }) // Use `alter: true` to update tables without deleting data
+    .sync({ force: false }) // Use `alter: true` to update tables without deleting data
     .then(() => {
         console.log("✅ Database & tables created!");
     })
