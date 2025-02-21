@@ -3,6 +3,16 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
+
+
+const certPath = path.join(__dirname, process.env.CERT_PEM); // Ensure correct path
+const cert = fs.readFileSync(certPath, 'utf8');
+
+
+console.log("Cert Path:", certPath);
+console.log("File Exists:", fs.existsSync(certPath));
+
+
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USERNAME,
@@ -14,7 +24,7 @@ const sequelize = new Sequelize(
         dialectOptions: {
             ssl: {
                 require: true,
-                ca: fs.readFileSync(path.join(__dirname, './cert.pem')),
+                ca: cert, 
                 rejectUnauthorized: false,
             },
         },
