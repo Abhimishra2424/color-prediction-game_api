@@ -1,7 +1,5 @@
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
-const fs = require("fs");
-const path = require("path");
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -13,18 +11,20 @@ const sequelize = new Sequelize(
         dialect: process.env.DIALECT,
         dialectOptions: {
             ssl: {
-                require: true,
-                ca: fs.readFileSync(path.join(__dirname, './cert.pem')),
+                require: false,
                 rejectUnauthorized: false,
-                connectTimeout: 60000, // 60 seconds timeout
             },
+        },
+        define: {
+            charset: "utf8",
+            collate: "utf8_general_ci",
         },
         pool: {
             max: 5,
             min: 0,
-            acquire: 100000,  // Increase acquire timeout
-            idle: 20000       // Increase idle time
-        },
+            acquire: 60000,
+            idle: 10000
+          },
         timezone: "+05:30", // Indian Standard Time (IST)
     }
 );
