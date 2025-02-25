@@ -41,7 +41,7 @@ const WalletService = {
             transaction_number,
             type: "credit",
             status: "pending",
-            source:  source
+            source: source
         });
     },
 
@@ -86,6 +86,68 @@ const WalletService = {
     async getRequestByTransactionNumber(transaction_number) {
         if (!transaction_number) throw new Error("Transaction number is required.");
         return await Transaction.findOne({ where: { transaction_number } });
+    },
+
+    // ✅ Create a withdrawal request
+    async withdrawRequest(user_id, amount) {
+        if (!user_id || !amount) {
+            throw new Error("User ID and amount are required.");
+        }
+
+        if (isNaN(amount) || amount <= 0) {
+            throw new Error("Invalid withdrawal amount.");
+        }
+
+        const wallet = await Wallet.findOne({ where: { user_id } });
+
+        if (!wallet || wallet.balance < amount) {
+            throw new Error("Insufficient balance.");
+        }
+
+        return await Transaction.create({
+            user_id,
+            amount,
+            type: "debit",
+            status: "pending",
+            source: "withdrawal"
+        });
+    },
+
+    // ✅ Approve Withdrawal Request
+    async approveWithdrawRequest(transaction_id) {
+        if (!transaction_id) throw new Error("Transaction ID is required.");
+
+        const transaction = await Transaction.findByPk(transaction_id);
+        if (!transaction) throw new Error("Transaction not found.");
+        if (transaction.status !== "pending") throw new Error("Transaction already processed.");
+
+        const wallet = await Wallet.findOne({ where: { user_id: transaction.user_id } });
+        if (!wallet || wallet.balance < transaction.amount) throw new Error("Insufficient balance.");
+
+        // Process withdrawal
+        return await db.sequelize.transaction(async (t) => {
+            wallet.balance -= parseFloat(transaction.amount);
+            await wallet.save({ transaction: t });
+
+            transaction.status = "approved";
+            await transaction.save({ transaction: t });
+
+            return wallet;
+        });
+    },
+
+    // ✅ Reject Withdrawal Request
+    async rejectWithdrawRequest(transaction_id) {
+        if (!transaction_id) throw new Error("Transaction ID is required.");
+
+        const transaction = await Transaction.findByPk(transaction_id);
+        if (!transaction) throw new Error("Transaction not found.");
+        if (transaction.status !== "pending") throw new Error("Transaction already processed.");
+
+        transaction.status = "rejected";
+        await transaction.save();
+
+        return transaction;
     },
 };
 

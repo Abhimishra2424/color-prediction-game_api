@@ -102,6 +102,73 @@ const WalletController = {
     }
   },
 
+    // ✅ Create Withdrawal Request
+    async withdrawRequest(req, res) {
+      try {
+        const { user_id, amount } = req.body;
+  
+        if (!user_id || !amount) {
+          return res.status(400).json({ success: false, message: "User ID and amount are required." });
+        }
+  
+        if (isNaN(amount) || amount <= 0) {
+          return res.status(400).json({ success: false, message: "Invalid withdrawal amount." });
+        }
+  
+        const withdrawalRequest = await WalletService.withdrawRequest(user_id, amount);
+  
+        return res.status(201).json({
+          success: true,
+          message: "Withdrawal request submitted successfully.",
+          data: withdrawalRequest,
+        });
+      } catch (error) {
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
+      }
+    },
+  
+    // ✅ Approve Withdrawal Request
+    async approveWithdraw(req, res) {
+      try {
+        const { request_id } = req.body;
+  
+        if (!request_id) {
+          return res.status(400).json({ success: false, message: "Request ID is required." });
+        }
+  
+        const updatedWallet = await WalletService.approveWithdrawRequest(request_id);
+  
+        return res.status(200).json({
+          success: true,
+          message: "Withdrawal approved successfully.",
+          wallet: updatedWallet,
+        });
+      } catch (error) {
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
+      }
+    },
+  
+    // ✅ Reject Withdrawal Request
+    async rejectWithdraw(req, res) {
+      try {
+        const { request_id } = req.body;
+  
+        if (!request_id) {
+          return res.status(400).json({ success: false, message: "Request ID is required." });
+        }
+  
+        const updatedRequest = await WalletService.rejectWithdrawRequest(request_id);
+  
+        return res.status(200).json({
+          success: true,
+          message: "Withdrawal request rejected.",
+          request: updatedRequest,
+        });
+      } catch (error) {
+        return res.status(500).json({ success: false, message: "Server error", error: error.message });
+      }
+    },
+
 };
 
 module.exports = WalletController;
